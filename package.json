@@ -1,0 +1,29 @@
+{
+  "name": "vad",
+  "author": {
+    "name": "voiXen GmbH"
+  },
+  "description": "WebRTC-based Voice Activity Detection library",
+  "version": "0.1.0",
+  "scripts": {
+	"install": "node-gyp rebuild"
+  },
+  "main": "./index.js",
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.10.37"
+  },
+  "dependencies": {
+    "bindings": "1.2.1",
+    "nan": "2.1.0",
+	"async": "1.5.0"
+  },
+  "gypfile": true,
+  "maintainers": [
+    {
+      "name": "patlevin",
+      "email": "pal@voixen.com"
+    }
+  ],
+  "directories": {}
+}
