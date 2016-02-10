@@ -84,11 +84,11 @@ May classify noise as voice, too. The default value if `mode` is omitted in the 
 
 Detection mode optimised for low-bitrate audio.
 
-#### VAD.AGGRESSIVE
+#### VAD.MODE_AGGRESSIVE
 
 Detection mode best suited for somewhat noisy, lower quality audio.
 
-#### VAD.VERY_AGGRESSIVE
+#### VAD.MODE_VERY_AGGRESSIVE
 
 Detection mode with lowest miss-rate. Works well for most inputs.
 
@@ -102,7 +102,7 @@ Works with node <0.12 as well as recent versions. Introduced as a node version-a
 The library is designed to work with input streams in mind, that is, sample buffers fed to `processAudio` should be
 rather short (36ms to 144ms - depending on your needs) and the sample rate no higher than 32kHz. Sample rates higher than
 than 16kHz provide no benefit to the VAD algorithm, as human voice patterns center around 4000 to 6000Hz. Minding the
-Nyquist-frequency yields sample rates between 8000 and 12000Hz for best results. 
+Nyquist-frequency yields sample rates between 8000 and 12000Hz for best results.
 
 ## Example
 

@@ -49,13 +49,13 @@ public:
     ~VADWorker() {}
 
     /**
-     *    Performs work in a separate thread. 
+     *    Performs work in a separate thread.
      */
     void Execute() { result = vadProcessAudio(vad, rate, samples, length / sizeof(float)); }
 
     /**
-       *    Convert the output and pass it back to js  
-     */    
+       *    Convert the output and pass it back to js
+     */
     void HandleOKCallback()
     {
         HandleScope scope;
@@ -127,7 +127,7 @@ NAN_METHOD(vadAlloc_)
     if (mem)
     {
         bool error = vad != mem;
-        Set(obj, New("error").ToLocalChecked(), New(error));        
+        Set(obj, New("error").ToLocalChecked(), New(error));
     }
     else
     {

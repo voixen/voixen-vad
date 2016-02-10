@@ -20,7 +20,7 @@ namespace mpa
 /**
  * Get cached frame info from the decoder state buffer
  * @param handle    Decoder state handle
- * @returns Last decoded frame info (stored just after the decoder state) 
+ * @returns Last decoded frame info (stored just after the decoder state)
  */
 static mp3data_struct* GetFrameInfo(Local<Value> handle)
 {
@@ -37,7 +37,7 @@ static bool IsNewFrameInfo(const mp3data_struct* current, const mp3data_struct* 
 /**
  * Create js object from the given frame info (this is expensive - so only do it on demand)
  * @param data    Frame info
- * @returns Frame info wrapped as js object 
+ * @returns Frame info wrapped as js object
  */
 static Local<Object> GetFrameInfoObject(const mp3data_struct& data, int bitsPerSample)
 {
@@ -239,7 +239,7 @@ NAN_METHOD(initDecoder)
         info.GetReturnValue().Set(size);
     }
     else
-    { 
+    {
         hip_t mp = reinterpret_cast<hip_t>(node::Buffer::Data(info[0]));
 
         int result = hip_decode_init(mp);
