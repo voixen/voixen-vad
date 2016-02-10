@@ -23,9 +23,7 @@ Supported sample rates are:
 ## API
 
 ```javascript
-var vad                = require('vad').VAD,
-    VoiceEvent         = require('vad').VoiceEvent,
-    VoiceDetectionMode = require('vad').DetectionMode
+var VAD = require('vad').VAD,
 ```
 
 ### VAD(mode)
@@ -39,7 +37,8 @@ event via `callback` and event.
 
 #### .on(event, callback)
 
-Subscribe to an event emitted by the VAD instance after detection. The event data provided to the callback is a `VoiceEvent` instance.
+Subscribe to an event emitted by the VAD instance after detection. The event data provided to the callback is a number that
+represents the voice detection result.
 Supported event names are:
 - 'event': VAD processsing finished successfully or with an error
 - 'voice': Human speech was detected
@@ -47,58 +46,49 @@ Supported event names are:
 - 'noise': [not implemented yet]
 - 'error': an error occured during detection
 
-### enum objects
+### Event codes
 
-Enum objects are used for `VoiceEvent` and `DetectionMode` to simulate the concept of an enumeration in
-JavaScript. Enum objects can be compared by reference (using the `===` operator) or by the `value`, `code` and
-`name` properties of their keys:
+Event codes are passed to the `processAudio` callback and to event handlers subscribed to the general
+'event'-event.
 
-```javascript
-var SampleEnum = {
-    Name1: { value: 23, name: 'Name1', code: 'X' },
-    Name2: { value: 42, name: 'Name2', code: 'A' }
-}
-var a = SampleEnum.Name1, b = 42, c = SampleEnum.Name2, d = SampleEnum.Name1, x = 'X' 
-// a === d && c.value === b && a.code === x
-```
+#### VAD.EVENT_ERROR
 
-### VoiceEvent
+Constant for voice detection errors. Passed to 'error' event handlers.
 
-An enum object that defines a voice detection event.
+#### VAD.EVENT_SILENCE
 
-#### .Error
+Constant for voice detection results with no detected voices.
+Passed to 'silence' event handlers.
 
-Denotes a detection error.
+#### VAD.EVENT_VOICE
 
-#### .Silence
+Constant for voice detection results with detected voice.
+Passed to 'voice' event handlers.
 
-Signifies non-voice data.
+#### VAD.EVENT_NOISE
 
-#### .Voice
-
-Represents a voice signal detection.
-
-#### .Noise
-
+Constant for voice detection results with detected noise.
 Not implemented yet
 
-### DetectionMode
+### Available VAD Modes
 
-Configuration value for the VAD algorithm.
+These contants can be used as the `mode` parameter of the `VAD` constructor to
+configure the VAD algorithm. 
 
-#### .Normal
+#### VAD.MODE_NORMAL
 
-Normal detection mode. Suitable for high bitrate, low-noise data. May classify noise as voice, too. The default. 
+Constant for normal voice detection mode. Suitable for high bitrate, low-noise data.
+May classify noise as voice, too. The default value if `mode` is omitted in the constructor.
 
-#### .LowBitrate
+#### VAD.MODE_LOW_BITRATE
 
 Detection mode optimised for low-bitrate audio.
 
-#### .Aggressive
+#### VAD.AGGRESSIVE
 
 Detection mode best suited for somewhat noisy, lower quality audio.
 
-#### .VeryAggressive
+#### VAD.VERY_AGGRESSIVE
 
 Detection mode with lowest miss-rate. Works well for most inputs.
 
@@ -117,13 +107,11 @@ Nyquist-frequency yields sample rates between 8000 and 12000Hz for best results.
 ## Example
 
 ```javascript
-var VAD           = require('vad').VAD,
-    DetectionMode = require('vad').DetectionMode,
-    VoiceEvent    = require('vad').VoiceEvent
+var VAD = require('vad').VAD
 
 var pcmInputStream = getReadableAudioStreamSomehow()
 var pcmOutputStream = getWritableStreamSomehow()
-var vad = new VAD(DetectionMode.LowBitrate)
+var vad = new VAD(VAD.MODE_LOW_BITRATE)
 
 vad.on('voice', function() {
   console.info('Voice detected!')
@@ -133,7 +121,7 @@ vad.on('voice', function() {
 pcmInputStream.on('data', function(chunk) {
   // assume audio data is 32bit float @ 16kHz
   vad.processAudio(chunk, 160000, function(error, event) {
-    if (event === VoiceEvent.Voice) {
+    if (event === VAD.EVENT_VOICE) {
       pcmOutputStream.write(chunk)
     }
   })

@@ -213,7 +213,7 @@ static vad_event vadDecision(const int* histogram)
     if (SELECT_EVENT(VAD_EVENT_ERROR, histogram) > 0)
         return VAD_EVENT_ERROR;        /* something went wrong along the way */
 
-    /* use the 80% rule and fallback to simple majority vote if no voice */
+    /* use the 80% rule to decide whether voice is active */
     if (SELECT_EVENT(VAD_EVENT_VOICE, histogram) >= maj)
         return VAD_EVENT_VOICE;
 

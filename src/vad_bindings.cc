@@ -42,33 +42,33 @@ namespace
 class VADWorker : public AsyncWorker
 {
 public:
-	VADWorker(Callback* callback, vad_t vad, size_t rate, const float* samples, size_t length)
-		: AsyncWorker(callback), vad(vad), rate(rate), samples(samples), length(length),
-		  result(VAD_EVENT_SILENCE) {}
+    VADWorker(Callback* callback, vad_t vad, size_t rate, const float* samples, size_t length)
+        : AsyncWorker(callback), vad(vad), rate(rate), samples(samples), length(length),
+          result(VAD_EVENT_SILENCE) {}
 
-	~VADWorker() {}
+    ~VADWorker() {}
 
-	/**
-     *	Performs work in a separate thread. 
-	 */
-	void Execute() { result = vadProcessAudio(vad, rate, samples, length / sizeof(float)); }
+    /**
+     *    Performs work in a separate thread. 
+     */
+    void Execute() { result = vadProcessAudio(vad, rate, samples, length / sizeof(float)); }
 
-	/**
-  	 *	Convert the output and pass it back to js  
-	 */	
-	void HandleOKCallback()
-	{
-		HandleScope scope;
-		Local<Value> argv[] = { Null(), New(static_cast<int>(result)) };
-		callback->Call(2, argv);	// callback(error, result)
-	}
+    /**
+       *    Convert the output and pass it back to js  
+     */    
+    void HandleOKCallback()
+    {
+        HandleScope scope;
+        Local<Value> argv[] = { Null(), New(static_cast<int>(result)) };
+        callback->Call(2, argv);    // callback(error, result)
+    }
 
 private:
-	vad_t 			vad;
-	size_t			rate;
-	const float* 	samples;
-	size_t 			length;
-	vad_event 		result;
+    vad_t        vad;
+    size_t       rate;
+    const float* samples;
+    size_t       length;
+    vad_event    result;
 };
 
 }
@@ -78,145 +78,144 @@ private:
 // nodejs v0.12+
 static size_t GetByteLength(Local<Value> value)
 {
-	using v8::ArrayBufferView;
+    using v8::ArrayBufferView;
 
-	if (value->IsArrayBufferView())
-	{
-		Local<ArrayBufferView> array = Local<ArrayBufferView>::Cast(value);
-		return array->ByteLength();
+    if (value->IsArrayBufferView())
+    {
+        Local<ArrayBufferView> array = Local<ArrayBufferView>::Cast(value);
+        return array->ByteLength();
     }
-	else
-	{
-		return Buffer::Length(value);
-	}
+    else
+    {
+        return Buffer::Length(value);
+    }
 }
 #else
 // nodejs v0.10+
 static size_t GetByteLength(Local<Value> value)
 {
-	if (value->IsObject() && !value->IsNull()) {
-		Local<Object> array = Local<Object>::Cast(value);
+    if (value->IsObject() && !value->IsNull()) {
+        Local<Object> array = Local<Object>::Cast(value);
 
-		MaybeLocal<Value> length = Get(array,
-			New<String>("byteLength").ToLocalChecked());
+        MaybeLocal<Value> length = Get(array,
+            New<String>("byteLength").ToLocalChecked());
 
-		return (!length.IsEmpty() && length.ToLocalChecked()->IsUint32()) ?
-			length.ToLocalChecked()->Uint32Value() : Buffer::Length(value);
+        return (!length.IsEmpty() && length.ToLocalChecked()->IsUint32()) ?
+            length.ToLocalChecked()->Uint32Value() : Buffer::Length(value);
     }
-	else
-	{
-		return Buffer::Length(value);
-	}
+    else
+    {
+        return Buffer::Length(value);
+    }
 }
 #endif
 
 // Wraps vadAllocate
 NAN_METHOD(vadAlloc_)
 {
-	HandleScope scope;
+    HandleScope scope;
 
-	Local<Object> obj = New<Object>();
+    Local<Object> obj = New<Object>();
 
-	// #0 buffer
-	void* mem 		= Buffer::HasInstance(info[0]) ? Buffer::Data(info[0]) : NULL;
-	size_t lenmem 	= mem ? Buffer::Length(info[0]) : 0;
+    // #0 buffer
+    void* mem         = Buffer::HasInstance(info[0]) ? Buffer::Data(info[0]) : NULL;
+    size_t lenmem     = mem ? Buffer::Length(info[0]) : 0;
 
-	vad_t vad = vadAllocate(mem, &lenmem);
-	Set(obj, New("size").ToLocalChecked(), New(static_cast<int>(lenmem)));
+    vad_t vad = vadAllocate(mem, &lenmem);
+    Set(obj, New("size").ToLocalChecked(), New(static_cast<int>(lenmem)));
 
-	if (mem)
-	{
-		bool error = vad != mem;
-		Set(obj, New("error").ToLocalChecked(), New(error));		
-	}
-	else
-	{
-		Set(obj, New("error").ToLocalChecked(), New(false));
-	}
+    if (mem)
+    {
+        bool error = vad != mem;
+        Set(obj, New("error").ToLocalChecked(), New(error));        
+    }
+    else
+    {
+        Set(obj, New("error").ToLocalChecked(), New(false));
+    }
 
-	// return value is { error: true|false, size: Integer }
-	info.GetReturnValue().Set(obj);
+    // return value is { error: true|false, size: Integer }
+    info.GetReturnValue().Set(obj);
 }
 
 
 // Wraps vadIint
 NAN_METHOD(vadInit_)
 {
-	HandleScope scope;
+    HandleScope scope;
 
-	// #0 buffer
-	vad_t vad = Buffer::HasInstance(info[0]) ?
-				reinterpret_cast<vad_t>(Buffer::Data(info[0])) : NULL;
+    // #0 buffer
+    vad_t vad = Buffer::HasInstance(info[0]) ?
+                reinterpret_cast<vad_t>(Buffer::Data(info[0])) : NULL;
 
-	if (!vad)
-	{
-		ThrowException(Exception::TypeError(New("Invalid VAD instance!").ToLocalChecked()));
-		return;
-	}
+    if (!vad)
+    {
+        ThrowException(Exception::TypeError(New("Invalid VAD instance!").ToLocalChecked()));
+        return;
+    }
 
-	// initialise VAD system
-	int result = vadInit(vad);
-	info.GetReturnValue().Set(result == 0);
+    // initialise VAD system
+    int result = vadInit(vad);
+    info.GetReturnValue().Set(result == 0);
 }
 
 // Wraps vadSetMode
 NAN_METHOD(vadSetMode_)
 {
-	HandleScope scope;
+    HandleScope scope;
 
-	// #0 buffer #1 integer
-	vad_t vad = Buffer::HasInstance(info[0]) ?
-				reinterpret_cast<vad_t>(Buffer::Data(info[0])) : NULL;
+    // #0 buffer #1 integer
+    vad_t vad = Buffer::HasInstance(info[0]) ?
+                reinterpret_cast<vad_t>(Buffer::Data(info[0])) : NULL;
 
-	if (!vad)
+    if (!vad)
     {
-		ThrowException(Exception::TypeError(New("Invalid VAD instance!").ToLocalChecked()));
-		return;
-	}
+        ThrowException(Exception::TypeError(New("Invalid VAD instance!").ToLocalChecked()));
+        return;
+    }
 
-	vad_mode mode = static_cast<vad_mode>(To<int32_t>(info[1]).FromJust());
+    vad_mode mode = static_cast<vad_mode>(To<int32_t>(info[1]).FromJust());
 
-	// apply mode
-	int result = vadSetMode(vad, mode);
-	info.GetReturnValue().Set(result == 0);
+    // apply mode
+    int result = vadSetMode(vad, mode);
+    info.GetReturnValue().Set(result == 0);
 }
 
 // Wraps vadProcessAudio
 NAN_METHOD(vadProcessAudioBuffer_)
 {
-	HandleScope scope;
+    HandleScope scope;
 
-	// #0 buffer #1 buffer #2 integer #3 callback
-	vad_t vad = Buffer::HasInstance(info[0]) ?
-				reinterpret_cast<vad_t>(Buffer::Data(info[0])) : NULL;
-	const float* samples = Buffer::HasInstance(info[1]) ?
-				reinterpret_cast<const float*>(Buffer::Data(info[1])) : NULL;
+    // #0 buffer #1 buffer #2 integer #3 callback
+    vad_t vad = Buffer::HasInstance(info[0]) ?
+                reinterpret_cast<vad_t>(Buffer::Data(info[0])) : NULL;
+    const float* samples = Buffer::HasInstance(info[1]) ?
+                reinterpret_cast<const float*>(Buffer::Data(info[1])) : NULL;
 
-	if (!vad || !samples)
-	{
-		if (!vad) ThrowException(Exception::TypeError(New("Invalid VAD instance!").ToLocalChecked()));
-		else ThrowException(Exception::TypeError(New("Invalid audio buffer!").ToLocalChecked()));
-		return;
-	}
+    if (!vad || !samples)
+    {
+        if (!vad) ThrowException(Exception::TypeError(New("Invalid VAD instance!").ToLocalChecked()));
+        else ThrowException(Exception::TypeError(New("Invalid audio buffer!").ToLocalChecked()));
+        return;
+    }
 
-	uint32_t rate = To<uint32_t>(info[2]).FromJust();
+    uint32_t rate = To<uint32_t>(info[2]).FromJust();
 
-	size_t length = GetByteLength(info[1]);
-	Callback* callback = new Callback(info[3].As<Function>());
-	VADWorker* worker = new VADWorker(callback, vad, rate, samples, length);
-	AsyncQueueWorker(worker);
+    size_t length = GetByteLength(info[1]);
+    Callback* callback = new Callback(info[3].As<Function>());
+    VADWorker* worker = new VADWorker(callback, vad, rate, samples, length);
+    AsyncQueueWorker(worker);
 }
 
 // Setup the native exports
 NAN_MODULE_INIT(init)
 {
-	Nan::Export(target, "vad_alloc", vadAlloc_);
+    Nan::Export(target, "vad_alloc", vadAlloc_);
     Nan::Export(target, "vad_init", vadInit_);
-	Nan::Export(target, "vad_setmode", vadSetMode_);
-	Nan::Export(target, "vad_processAudio", vadProcessAudioBuffer_);
+    Nan::Export(target, "vad_setmode", vadSetMode_);
+    Nan::Export(target, "vad_processAudio", vadProcessAudioBuffer_);
 }
 
 }
 
-NODE_MODULE(vad, vad::init) 
-
+NODE_MODULE(vad, vad::init)
