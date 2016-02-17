@@ -17,7 +17,6 @@ using v8::PropertyAttribute;
 using v8::ReadOnly;
 using v8::DontDelete;
 using v8::String;
-using v8::ThrowException;
 using v8::Value;
 
 using Nan::AsyncQueueWorker;
@@ -30,8 +29,6 @@ using Nan::New;
 using Nan::Null;
 using Nan::Set;
 using Nan::To;
-
-using node::Buffer;
 
 namespace vad
 {
@@ -87,7 +84,7 @@ static size_t GetByteLength(Local<Value> value)
     }
     else
     {
-        return Buffer::Length(value);
+        return node::Buffer::Length(value);
     }
 }
 #else
@@ -101,11 +98,11 @@ static size_t GetByteLength(Local<Value> value)
             New<String>("byteLength").ToLocalChecked());
 
         return (!length.IsEmpty() && length.ToLocalChecked()->IsUint32()) ?
-            length.ToLocalChecked()->Uint32Value() : Buffer::Length(value);
+            length.ToLocalChecked()->Uint32Value() : node::Buffer::Length(value);
     }
     else
     {
-        return Buffer::Length(value);
+        return node::Buffer::Length(value);
     }
 }
 #endif
@@ -118,8 +115,8 @@ NAN_METHOD(vadAlloc_)
     Local<Object> obj = New<Object>();
 
     // #0 buffer
-    void* mem         = Buffer::HasInstance(info[0]) ? Buffer::Data(info[0]) : NULL;
-    size_t lenmem     = mem ? Buffer::Length(info[0]) : 0;
+    void* mem         = node::Buffer::HasInstance(info[0]) ? node::Buffer::Data(info[0]) : NULL;
+    size_t lenmem     = mem ? node::Buffer::Length(info[0]) : 0;
 
     vad_t vad = vadAllocate(mem, &lenmem);
     Set(obj, New("size").ToLocalChecked(), New(static_cast<int>(lenmem)));
@@ -145,12 +142,12 @@ NAN_METHOD(vadInit_)
     HandleScope scope;
 
     // #0 buffer
-    vad_t vad = Buffer::HasInstance(info[0]) ?
-                reinterpret_cast<vad_t>(Buffer::Data(info[0])) : NULL;
+    vad_t vad = node::Buffer::HasInstance(info[0]) ?
+                reinterpret_cast<vad_t>(node::Buffer::Data(info[0])) : NULL;
 
     if (!vad)
     {
-        ThrowException(Exception::TypeError(New("Invalid VAD instance!").ToLocalChecked()));
+        Nan::ThrowTypeError("Invalid VAD instance!");
         return;
     }
 
@@ -165,12 +162,12 @@ NAN_METHOD(vadSetMode_)
     HandleScope scope;
 
     // #0 buffer #1 integer
-    vad_t vad = Buffer::HasInstance(info[0]) ?
-                reinterpret_cast<vad_t>(Buffer::Data(info[0])) : NULL;
+    vad_t vad = node::Buffer::HasInstance(info[0]) ?
+                reinterpret_cast<vad_t>(node::Buffer::Data(info[0])) : NULL;
 
     if (!vad)
     {
-        ThrowException(Exception::TypeError(New("Invalid VAD instance!").ToLocalChecked()));
+        Nan::ThrowTypeError("Invalid VAD instance!");
         return;
     }
 
@@ -187,15 +184,15 @@ NAN_METHOD(vadProcessAudioBuffer_)
     HandleScope scope;
 
     // #0 buffer #1 buffer #2 integer #3 callback
-    vad_t vad = Buffer::HasInstance(info[0]) ?
-                reinterpret_cast<vad_t>(Buffer::Data(info[0])) : NULL;
-    const float* samples = Buffer::HasInstance(info[1]) ?
-                reinterpret_cast<const float*>(Buffer::Data(info[1])) : NULL;
+    vad_t vad = node::Buffer::HasInstance(info[0]) ?
+                reinterpret_cast<vad_t>(node::Buffer::Data(info[0])) : NULL;
+    const float* samples = node::Buffer::HasInstance(info[1]) ?
+                reinterpret_cast<const float*>(node::Buffer::Data(info[1])) : NULL;
 
     if (!vad || !samples)
     {
-        if (!vad) ThrowException(Exception::TypeError(New("Invalid VAD instance!").ToLocalChecked()));
-        else ThrowException(Exception::TypeError(New("Invalid audio buffer!").ToLocalChecked()));
+        if (!vad) Nan::ThrowTypeError("Invalid VAD instance!");
+        else Nan::ThrowTypeError("Invalid audio buffer!");
         return;
     }
 

@@ -260,7 +260,7 @@ NAN_METHOD(freeDecoder)
         hip_t mp = reinterpret_cast<hip_t>(node::Buffer::Data(info[0]));
         if (hip_validate(mp))
         {
-            ThrowException(Exception::TypeError(Nan::New("Invalid decoder state!").ToLocalChecked()));
+            Nan::ThrowTypeError("Invalid decoder state!");
             return;
         }
 
@@ -279,14 +279,14 @@ NAN_METHOD(decodeFrame)
           node::Buffer::HasInstance(info[3]) && // output buffer left channel
           node::Buffer::HasInstance(info[4])))  // output buffer right channel
     {
-        ThrowException(Exception::TypeError(Nan::New("Invalid argument").ToLocalChecked()));
+        Nan::ThrowTypeError("Invalid argument");
         return;
     }
 
     hip_t mp = reinterpret_cast<hip_t>(node::Buffer::Data(info[0]));
     if (hip_validate(mp))
     {
-        ThrowException(Exception::TypeError(Nan::New("Invalid decoder state!").ToLocalChecked()));
+        Nan::ThrowTypeError("Invalid decoder state!");
         return;
     }
 
@@ -311,7 +311,7 @@ NAN_METHOD(getLastFrameInfo)
     hip_t mp = reinterpret_cast<hip_t>(node::Buffer::Data(info[0]));
     if (hip_validate(mp))
     {
-        ThrowException(Exception::TypeError(Nan::New("Invalid decoder state!").ToLocalChecked()));
+        Nan::ThrowTypeError("Invalid decoder state!");
         return;
     }
 
@@ -331,12 +331,12 @@ NAN_METHOD(getLastFrameInfo)
 NAN_MODULE_INIT(init)
 {
     const int MP3_FRAME_SIZE = 1152;
-    target->Set(String::NewSymbol("MPA_INPUT_BUFFER_SIZE"), Nan::New(4096),    // nicely align to page
+	Nan::ForceSet(target, Nan::New("MPA_INPUT_BUFFER_SIZE").ToLocalChecked(), Nan::New(4096),    // nicely align to page
         static_cast<PropertyAttribute>(ReadOnly|DontDelete));
-    target->Set(String::NewSymbol("MPA_SAMPLE_BUFFER_SIZE"),
+    Nan::ForceSet(target, Nan::New("MPA_SAMPLE_BUFFER_SIZE").ToLocalChecked(),
         Nan::New(static_cast<int>(MP3_FRAME_SIZE * sizeof(short))),
         static_cast<PropertyAttribute>(ReadOnly|DontDelete));
-    target->Set(String::NewSymbol("MPA_FLOAT_BUFFER_SIZE"),
+    Nan::ForceSet(target, Nan::New("MPA_FLOAT_BUFFER_SIZE").ToLocalChecked(),
         Nan::New(static_cast<int>(MP3_FRAME_SIZE * sizeof(float))),
         static_cast<PropertyAttribute>(ReadOnly|DontDelete));
 
