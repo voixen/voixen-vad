@@ -12,9 +12,9 @@ float (-1..+1) PCM audio samples. Detection results are returned using an async 
 
 Supported sample rates are:
 - 8000Hz*
-- 160000Hz*
-- 320000Hz
-- 480000Hz
+- 16000Hz*
+- 32000Hz
+- 48000Hz
 
 *recommended sample rate for best performance/accuracy tradeoff
 
