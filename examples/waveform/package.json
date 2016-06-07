@@ -1,0 +1,25 @@
+{
+  "name": "vad-waveform-generator-example",
+  "author": {
+    "name": "voiXen GmbH"
+  },
+  "description": "Example program for the vad-package that generates a waveform image from an MP3",
+  "version": "1.0.0",
+  "main": "./waveform-generator.js",
+  "license": "MIT",
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "dependencies": {
+    "vad": "../../",
+    "node-png": "latest",
+    "stdio": "latest"
+  },
+  "maintainers": [
+    {
+      "name": "patlevin",
+      "email": "pal@voixen.com"
+    }
+  ],
+  "directories": {}
+}
