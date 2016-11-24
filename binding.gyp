@@ -10,6 +10,14 @@
             ],
             'dependencies': [
                 './vendor/mpadec/mpadec.gyp:mpadec'
+            ],
+            'conditions': [
+                ['OS=="mac"', {
+                    "xcode_settings": {
+                        "MACOSX_DEPLOYMENT_TARGET": "10.9",
+                        "CLANG_CXX_LIBRARY": "libc++"
+                    }
+                }]
             ]
         },
         {
@@ -24,6 +32,14 @@
             ],
             'dependencies': [
                 './vendor/webrtc_vad/webrtc_vad.gyp:webrtc_vad'
+            ],
+            'conditions': [
+                ['OS=="mac"', {
+                    "xcode_settings": {
+                        "MACOSX_DEPLOYMENT_TARGET": "10.9",
+                        "CLANG_CXX_LIBRARY": "libc++"
+                    }
+                }]
             ]
         }
     ]
