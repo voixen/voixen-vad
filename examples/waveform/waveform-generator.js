@@ -1,6 +1,6 @@
 /**
  * VAD Library Sample
- * 
+ *
  * The example program analyses a given MP3 audio file and outputs a PNG containg both
  * a waveform image of the selected audio channel and a visualisation of the detected
  * voice activity.
@@ -72,7 +72,10 @@ Array.prototype.flatten = function() {
 
 // fill a png with a solid colour (non-blended)
 png.prototype.fill = function(colour) {
-    const { r = r, g = g, b = b, a = a } = colour
+    var a, b, g, r, ref, ref1, ref2, ref3;
+
+    r = (ref = colour.r) != null ? ref : r, g = (ref1 = colour.g) != null ? ref1 : g, b = (ref2 = colour.b) != null ? ref2 : b, a = (ref3 = colour.a) != null ? ref3 : a;
+    //const { r = r, g = g, b = b, a = a } = colour
     const pixels = this.data
     for (let y = 0, ofs = 0; y < this.height; ++y) {
         for (let x = 0; x < this.width; ++x, ofs += 4) {
@@ -86,14 +89,17 @@ png.prototype.fill = function(colour) {
 
 // draw a vertical line
 png.prototype.vline = function(x, y1, y2, colour) {
-    const { r = r, g = g, b = b, a = a } = colour
+    var a, b, g, r, ref, ref1, ref2, ref3;
+    r = (ref = colour.r) != null ? ref : r, g = (ref1 = colour.g) != null ? ref1 : g, b = (ref2 = colour.b) != null ? ref2 : b, a = (ref3 = colour.a) != null ? ref3 : a;
+
     const pixels = this.data
     const ia = 255 - a
     let ofs = (y1 * this.width + x) * 4,
         inc = this.width * 4
     for (let i = 0, n = y2 - y1; i < n; ++i, ofs += inc) {
-        const [_r, _g, _b, _a] = pixels.slice(ofs, ofs + 4),
-            oa = (a + (_a * ia) / 255) >>> 0
+        var _a, _b, _g, _r, ref, oa;
+        ref = pixels.slice(ofs, ofs + 4), _r = ref[0], _g = ref[1], _b = ref[2], _a = ref[3];
+        oa = (a + (_a * ia) / 255) >>> 0;
         // simple, unptimised full alpha blending
         pixels[ofs + 0] = ((r * a + (_r * _a * ia) / 255) / oa) >>> 0
         pixels[ofs + 1] = ((g * a + (_g * _a * ia) / 255) / oa) >>> 0
@@ -151,7 +157,7 @@ function WaveformGenerator(options) {
 
 // Join default and user options
 WaveformGenerator.prototype._joinOptions = function(options, defaults) {
-    const select = prop => prop in options ? 
+    const select = prop => prop in options ?
         options[prop] : defaults[prop]
     return {
         width: select('width'), height: Math.max(32, select('height')),
@@ -177,7 +183,7 @@ WaveformGenerator.prototype._onSamples = function(sampleData) {
 
     ++this.totalFrames
     this.duration += frameDuration
-    // since we never actually read from the 
+    // since we never actually read from the
     this.decode.read()
 
     // channel data is a nodejs Buffer object - we want an array of floats instead
@@ -250,9 +256,12 @@ WaveformGenerator.prototype._drawSample = function(x, y1, y2, colour) {
 WaveformGenerator.prototype._drawVoiceEvents = function() {
     const eventsPerPixel = this.voiceEvents.length / this.image.width,
         kVoiceActivityOffset = this.image.height - 16,
-        events = this.voiceEvents,
-        {width=width, height=height} = this.image
+        events = this.voiceEvents;
 
+        var _a, _b, _g, _r, ref;
+
+        ref = pixels.slice(ofs, ofs + 4), _r = ref[0], _g = ref[1], _b = ref[2], _a = ref[3];
+        
     for (let x = 0; x < width; ++x) {
         const i = Math.round(x * eventsPerPixel)
         let colour = events[i] === VAD.EVENT_VOICE ? this.options.voice :
@@ -265,7 +274,7 @@ WaveformGenerator.prototype._drawVoiceEvents = function() {
 
 /**
  * @api public
- * Generate a waveform image and a voice activity visualisation from a given 
+ * Generate a waveform image and a voice activity visualisation from a given
  * MP3 audio stream and output the result into the provided output stream
  * @param {Stream} audioStream  Readable stream that contains MP3 audio data
  * @param {Stream} outputStream Writeable stream that receives the waveform PNG image
@@ -273,7 +282,7 @@ WaveformGenerator.prototype._drawVoiceEvents = function() {
 WaveformGenerator.prototype.generateWaveform = function(audioStream, outputStream) {
     if (typeof audioStream !== 'object')
         throw new TypeError('audioStream must be a valid Stream instance')
- 
+
     if (typeof outputStream !== 'object')
         throw new TypeError('outputStream must be a valid Stream instance')
 
@@ -301,7 +310,7 @@ const opts = stdio.getopt({
 
 // extract colours from hex values
 let parseHex = (str, c) => parseInt(str.substr(2 * c, 2), 16)
-let parseCol = col => /^[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/.test(col) ? 
+let parseCol = col => /^[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/.test(col) ?
     new Colour(parseHex(col, 0), parseHex(col, 1), parseHex(col, 2),
         col.length === 8 ? parseHex(col, 3) : 255) : null
 
