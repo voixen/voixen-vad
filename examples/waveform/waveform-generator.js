@@ -72,11 +72,11 @@ Array.prototype.flatten = function() {
 
 // fill a png with a solid colour (non-blended)
 png.prototype.fill = function(colour) {
-    var a, b, g, r, ref, ref1, ref2, ref3;
-
-    r = (ref = colour.r) != null ? ref : r, g = (ref1 = colour.g) != null ? ref1 : g, b = (ref2 = colour.b) != null ? ref2 : b, a = (ref3 = colour.a) != null ? ref3 : a;
-    //const { r = r, g = g, b = b, a = a } = colour
-    const pixels = this.data
+    const r = colour.r,
+          g = colour.g,
+          b = colour.b,
+          a = colour.a;
+    const pixels = this.data;
     for (let y = 0, ofs = 0; y < this.height; ++y) {
         for (let x = 0; x < this.width; ++x, ofs += 4) {
             pixels[ofs + 0] = r
@@ -89,16 +89,17 @@ png.prototype.fill = function(colour) {
 
 // draw a vertical line
 png.prototype.vline = function(x, y1, y2, colour) {
-    var a, b, g, r, ref, ref1, ref2, ref3;
-    r = (ref = colour.r) != null ? ref : r, g = (ref1 = colour.g) != null ? ref1 : g, b = (ref2 = colour.b) != null ? ref2 : b, a = (ref3 = colour.a) != null ? ref3 : a;
-
+    const r = colour.r,
+          g = colour.g,
+          b = colour.b,
+          a = colour.a;
     const pixels = this.data
     const ia = 255 - a
     let ofs = (y1 * this.width + x) * 4,
         inc = this.width * 4
     for (let i = 0, n = y2 - y1; i < n; ++i, ofs += inc) {
-        var _a, _b, _g, _r, ref, oa;
-        ref = pixels.slice(ofs, ofs + 4), _r = ref[0], _g = ref[1], _b = ref[2], _a = ref[3];
+        var ref = pixels.slice(ofs, ofs + 4);
+        const _r = ref[0], _g = ref[1], _b = ref[2], _a = ref[3];
         oa = (a + (_a * ia) / 255) >>> 0;
         // simple, unptimised full alpha blending
         pixels[ofs + 0] = ((r * a + (_r * _a * ia) / 255) / oa) >>> 0
@@ -261,7 +262,7 @@ WaveformGenerator.prototype._drawVoiceEvents = function() {
         var _a, _b, _g, _r, ref;
 
         ref = pixels.slice(ofs, ofs + 4), _r = ref[0], _g = ref[1], _b = ref[2], _a = ref[3];
-        
+
     for (let x = 0; x < width; ++x) {
         const i = Math.round(x * eventsPerPixel)
         let colour = events[i] === VAD.EVENT_VOICE ? this.options.voice :
