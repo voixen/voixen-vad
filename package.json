@@ -4,7 +4,7 @@
     "name": "voiXen GmbH"
   },
   "description": "WebRTC-based Voice Activity Detection library",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "scripts": {
     "install": "node-gyp rebuild"
   },
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "bindings": "1.2.1",
-    "nan": "2.4.0",
+    "nan": "2.5.0",
     "async": "1.5.2"
   },
   "gypfile": true,
