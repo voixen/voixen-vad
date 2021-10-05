@@ -11,7 +11,7 @@
   "main": "./index.js",
   "license": "MIT",
   "engines": {
-    "node": ">=0.10.37"
+    "node": "^10.24.1"
   },
   "dependencies": {
     "bindings": "1.2.1",
